@@ -1,0 +1,32 @@
+---
+title: "Citation Network"
+author: "A.G. Bocsardi"
+date: "2023-11-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd('/Users/bocsar000/Documents/projects/scopus_scrape')
+
+```
+
+# Load data
+```{r}
+library(igraph)
+
+# Load data
+setwd('/Users/bocsar000/Documents/projects/scopus_scrape/')
+node_attributes <- na.omit(read.csv("data/node_covars.csv", stringsAsFactors = FALSE))
+edge_list <- read.csv("data/edge_list.csv", stringsAsFactors = FALSE)
+
+# Create a graph from the edge list
+g <- graph_from_data_frame(d=edge_list, directed=TRUE)
+vertex_names <- V(g)$name
+
+
+
+
+
+```
+
