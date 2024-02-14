@@ -1,0 +1,76 @@
+---
+title: "Network Analysis of Scientific Publications"
+output: html_document
+---
+
+## Network Analysis
+
+This section presents an analysis of a network of scientific publications, where the edges represent shared authors between papers. We calculate various network descriptives using the `igraph` package without directly importing libraries, utilizing the `::` operator.
+
+```{r}
+setwd('/Users/bocsar000/Documents/projects/scopus_scrape')
+
+# Replace 'path/to/your/nodes.csv' and 'path/to/your/edges.csv' with the actual file paths
+nodes <- read.csv("data/network/node_list.csv")
+edges <- read.csv("data/network/edge_list.csv")
+
+# Create a graph from the edge list
+g <- igraph::graph_from_data_frame(d=edges, vertices=nodes, directed=FALSE)
+```
+
+
+### Network Density
+
+The network density gives us an idea of how connected the graph is, representing the proportion of potential connections in the network that are actual connections.
+
+```{r network-density}
+
+density <- igraph::edge_density(g)
+cat("Network Density: ", density, "\n")
+```
+
+### Triad Census
+
+The triad census counts the number of triads (groups of three nodes) for each possible triad type, which helps us understand the local structure of the network.
+
+```{r triad-census}
+triad_census <- igraph::triad_census(g)
+cat("Triad Census:\n")
+print(triad_census)
+cat("First is empty triad, 3rd is dyad with isolated third, 11th is A<->B<->C, last is full graph\n")
+```
+
+### Degree Distribution
+
+The degree distribution shows how many nodes have a certain number of connections, which can indicate the presence of hubs in the network.
+
+```{r degree-distribution}
+degree_distribution <- igraph::degree_distribution(g)
+cat("Degree Distribution (first few values):\n")
+print(head(degree_distribution)) # Showing only the first few values for brevity
+```
+
+### Small-worldness
+
+Small-world networks are characterized by higher clustering and shorter average path lengths compared to random graphs. Here, we calculate the clustering coefficient and average path length as a first step to assess small-worldness.
+
+```{r small-worldness}
+clustering_coefficient <- igraph::transitivity(g, type = "average")
+average_path_length <- igraph::mean_distance(g, directed = FALSE)
+cat("Clustering Coefficient:", clustering_coefficient, "\n")
+cat("Average Path Length:", average_path_length, "\n")
+# Note: For a complete small-worldness assessment, compare these to equivalent random graphs.
+```
+
+### Betweenness Centrality
+
+Betweenness centrality measures the extent to which a node lies on paths between other nodes, highlighting potential points of control within the network.
+
+```{r betweenness-centrality}
+betweenness_centrality <- igraph::betweenness(g, directed = FALSE)
+cat("Betweenness Centrality (first few nodes):\n")
+# Assuming we want to print a summary of betweenness centrality values for the first few nodes:
+print(head(betweenness_centrality))
+```
+
+
