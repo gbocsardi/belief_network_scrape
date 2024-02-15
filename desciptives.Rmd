@@ -11,11 +11,29 @@ This section presents an analysis of a network of scientific publications, where
 setwd('/Users/bocsar000/Documents/projects/scopus_scrape')
 
 # Replace 'path/to/your/nodes.csv' and 'path/to/your/edges.csv' with the actual file paths
-nodes <- read.csv("data/network/node_list.csv")
-edges <- read.csv("data/network/edge_list.csv")
+nodes <- arrow::read_feather("data/network/node_list.feather")
+edges <- arrow::read_feather("data/network/edge_list.feather")
+
+full_paper_sample <- arrow::read_feather("data/final_sample.feather")
+
+
+library(dplyr)
+
+nodes <- nodes %>%
+  mutate(
+    Domain = sapply(Domain, function(x) paste(x, collapse = "; ")), # Collapse list into a single string separated by "; "
+    `Search Term` = sapply(`Search Term`, function(x) paste(x, collapse = "; "))
+  )
+
 
 # Create a graph from the edge list
-g <- igraph::graph_from_data_frame(d=edges, vertices=nodes, directed=FALSE)
+paper_network <- igraph::graph_from_data_frame(d=edges, vertices=nodes, directed=FALSE)
+
+
+# save source objects into RData
+save(nodes, edges, full_paper_sample, paper_network, file = "data/network_analysis.RData")
+
+
 ```
 
 
